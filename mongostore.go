@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	ErrInvalidId = errors.New("mgostore: invalid session id")
+	ErrInvalidId = errors.New("mongostore: invalid session id")
 )
 
 // Session object store in MongoDB
