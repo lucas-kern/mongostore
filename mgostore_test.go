@@ -12,7 +12,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/globalsign/mgo"
+	"go.mongodb.org/mongo-driver/mongo"
 	"github.com/gorilla/sessions"
 )
 
@@ -36,7 +36,7 @@ func TestMongoStore(t *testing.T) {
 	// license that can be found in the LICENSE file.
 
 	// Round 1 ----------------------------------------------------------------
-	dbsess, err := mgo.Dial("localhost")
+	dbsess, err := mongo.Dial("localhost")
 	if err != nil {
 		panic(err)
 	}

@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/globalsign/mgo"
-	"github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 )
@@ -31,12 +31,12 @@ type MongoStore struct {
 	Codecs  []securecookie.Codec
 	Options *sessions.Options
 	Token   TokenGetSeter
-	coll    *mgo.Collection
+	coll    *mongo.Collection
 }
 
 // NewMongoStore returns a new MongoStore.
 // Set ensureTTL to true let the database auto-remove expired object by maxAge.
-func NewMongoStore(c *mgo.Collection, maxAge int, ensureTTL bool,
+func NewMongoStore(c *mongo.Collection, maxAge int, ensureTTL bool,
 	keyPairs ...[]byte) *MongoStore {
 	store := &MongoStore{
 		Codecs: securecookie.CodecsFromPairs(keyPairs...),
@@ -51,7 +51,7 @@ func NewMongoStore(c *mgo.Collection, maxAge int, ensureTTL bool,
 	store.MaxAge(maxAge)
 
 	if ensureTTL {
-		c.EnsureIndex(mgo.Index{
+		c.EnsureIndex(mongo.Index{
 			Key:         []string{"modified"},
 			Background:  true,
 			Sparse:      true,
