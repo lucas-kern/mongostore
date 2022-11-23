@@ -5,7 +5,7 @@ mongostore
 
 ## Requirements
 
-Depends on the [mgo](https://labix.org/v2/mgo) library.
+Depends on the [mongo](https://labix.org/v2/mongo) library.
 
 ## Installation
 
@@ -19,7 +19,7 @@ Available on [godoc.org](http://www.godoc.org/github.com/kidstuff/mongostore).
 ```go
     func foo(rw http.ResponseWriter, req *http.Request) {
         // Fetch new store.
-        dbsess, err := mgo.Dial("localhost")
+        dbsess, err := mongo.Dial("localhost")
         if err != nil {
             panic(err)
         }
