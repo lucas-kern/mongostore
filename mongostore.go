@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/bson"
+	bson "go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 )
@@ -21,7 +21,7 @@ var (
 
 // Session object store in MongoDB
 type Session struct {
-	Id       bson.ObjectId `bson:"_id,omitempty"`
+	Id       bson.ObjectID `bson:"_id,omitempty"`
 	Data     string
 	Modified time.Time
 }
@@ -108,7 +108,7 @@ func (m *MongoStore) Save(r *http.Request, w http.ResponseWriter,
 	}
 
 	if session.ID == "" {
-		session.ID = bson.NewObjectId().Hex()
+		session.ID = bson.NewObjectID().Hex()
 	}
 
 	if err := m.upsert(session); err != nil {
@@ -140,12 +140,13 @@ func (m *MongoStore) MaxAge(age int) {
 }
 
 func (m *MongoStore) load(session *sessions.Session) error {
-	if !bson.IsObjectIdHex(session.ID) {
-		return ErrInvalidId
+	sessionID, err = bson.ObjectIDFromHex(session.ID)
+	if err {
+		return err
 	}
 
 	s := Session{}
-	err := m.coll.FindId(bson.ObjectIdHex(session.ID)).One(&s)
+	err := m.coll.FindId(sessionID).One(&s)
 	if err != nil {
 		return err
 	}
@@ -159,8 +160,9 @@ func (m *MongoStore) load(session *sessions.Session) error {
 }
 
 func (m *MongoStore) upsert(session *sessions.Session) error {
-	if !bson.IsObjectIdHex(session.ID) {
-		return ErrInvalidId
+	sessionID, err = bson.ObjectIDFromHex(session.ID)
+	if err {
+		return err
 	}
 
 	var modified time.Time
@@ -180,7 +182,7 @@ func (m *MongoStore) upsert(session *sessions.Session) error {
 	}
 
 	s := Session{
-		Id:       bson.ObjectIdHex(session.ID),
+		Id:       sessionID,
 		Data:     encoded,
 		Modified: modified,
 	}
@@ -194,9 +196,10 @@ func (m *MongoStore) upsert(session *sessions.Session) error {
 }
 
 func (m *MongoStore) delete(session *sessions.Session) error {
-	if !bson.IsObjectIdHex(session.ID) {
-		return ErrInvalidId
+	sessionID, err = bson.ObjectIDFromHex(session.ID)
+	if err {
+		return err
 	}
 
-	return m.coll.RemoveId(bson.ObjectIdHex(session.ID))
+	return m.coll.RemoveId(sessionID)
 }
